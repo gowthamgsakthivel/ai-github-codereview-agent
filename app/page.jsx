@@ -185,7 +185,7 @@ export default function Dashboard() {
             color: '#10b981'
           }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 8px #10b981' }} />
-            Gemini 1.5 Flash (Free Tier)
+            Gemini 2.5 Flash (Free Tier)
           </div>
 
           <a 
