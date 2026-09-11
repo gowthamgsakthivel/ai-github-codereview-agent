@@ -56,7 +56,7 @@
     },
     {
       "parameters": {
-        "url": "=https://api.github.com/repos/{{ $json.repoFullName }}/pulls/{{ $json.prNumber }}",
+        "url": "=https://api.github.com/repos/{{ $('Validate & Extract PR Info').first().json.repoFullName }}/pulls/{{ $('Validate & Extract PR Info').first().json.prNumber }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -115,7 +115,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const prData = $('Build Agent Prompt').first().json;\nconst geminiResponse = $input.first().json;\n\nlet reviewText = '⚠️ AI Review could not be generated.';\n\ntry {\n  if (geminiResponse.candidates && geminiResponse.candidates[0]?.content?.parts?.[0]?.text) {\n    reviewText = geminiResponse.candidates[0].content.parts[0].text;\n  } else if (geminiResponse.error) {\n    reviewText = `❌ **AI Review Error**: ${geminiResponse.error.message || 'Unknown API Error'}`;\n  }\n} catch (err) {\n  reviewText = `❌ **Error Parsing AI Response**: ${err.message}`;\n}\n\nconst formattedComment = `## 🤖 AI Code Review Agent Report\\n\\n${reviewText}\\n\\n---\\n*Reviewed automatically by [AI GitHub Code Review Agent](https://github.com/${prData.repoFullName}) powered by Google Gemini & n8n.*`;\n\nreturn {\n  json: {\n    repoFullName: prData.repoFullName,\n    prNumber: prData.prNumber,\n    commentBody: formattedComment\n  }\n};"
+        "jsCode": "const prData = $('Validate & Extract PR Info').first().json;\nconst geminiResponse = $input.first().json;\n\nlet reviewText = '⚠️ AI Review could not be generated.';\n\ntry {\n  if (geminiResponse.candidates && geminiResponse.candidates[0]?.content?.parts?.[0]?.text) {\n    reviewText = geminiResponse.candidates[0].content.parts[0].text;\n  } else if (geminiResponse.error) {\n    reviewText = `❌ **AI Review Error**: ${geminiResponse.error.message || 'Unknown API Error'}`;\n  }\n} catch (err) {\n  reviewText = `❌ **Error Parsing AI Response**: ${err.message}`;\n}\n\nconst formattedComment = `## 🤖 AI Code Review Agent Report\\n\\n${reviewText}\\n\\n---\\n*Reviewed automatically by [AI GitHub Code Review Agent](https://github.com/${prData.repoFullName}) powered by Google Gemini & n8n.*`;\n\nreturn {\n  json: {\n    repoFullName: prData.repoFullName,\n    prNumber: prData.prNumber,\n    commentBody: formattedComment\n  }\n};"
       },
       "id": "node-format-comment",
       "name": "Format Review Comment",
@@ -126,7 +126,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.github.com/repos/{{ $json.repoFullName }}/issues/{{ $json.prNumber }}/comments",
+        "url": "=https://api.github.com/repos/{{ $('Validate & Extract PR Info').first().json.repoFullName }}/issues/{{ $('Validate & Extract PR Info').first().json.prNumber }}/comments",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -158,7 +158,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Code review posted successfully for PR #{{ $('Build Agent Prompt').first().json.prNumber }}\"\n}",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Code review posted successfully for PR #{{ $('Validate & Extract PR Info').first().json.prNumber }}\"\n}",
         "options": {}
       },
       "id": "node-respond-success",
