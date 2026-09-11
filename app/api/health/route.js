@@ -14,7 +14,7 @@ export async function GET() {
   let geminiStatus = { valid: false };
   if (hasGeminiKey) {
     try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash?key=${process.env.GEMINI_API_KEY}`);
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash?key=${process.env.GEMINI_API_KEY}`);
       if (res.ok) {
         geminiStatus = { valid: true };
       } else {
@@ -37,7 +37,7 @@ export async function GET() {
       gemini: {
         configured: hasGeminiKey,
         ...geminiStatus,
-        model: 'gemini-1.5-flash'
+        model: 'gemini-2.5-flash'
       }
     },
     timestamp: new Date().toISOString()
