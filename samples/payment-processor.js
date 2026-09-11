@@ -7,11 +7,11 @@ const STRIPE_SECRET_KEY = "sk_test_51MzFakeKeyNeverPutSecretInSourceCode998811";
 
 // ❌ BUG: Floating-point arithmetic error for currency calculations
 function calculateTotalWithTax(subtotal, taxRate, discount) {
-  // JavaScript floating point issue (e.g., 0.1 + 0.2 !== 0.3)
+  // JavaScript floating point error (e.g. 0.1 + 0.2 !== 0.3)
   const discountAmount = subtotal * discount;
   const discountedSubtotal = subtotal - discountAmount;
   const total = discountedSubtotal + (discountedSubtotal * taxRate);
-  return total; // Should round to 2 decimal cents or use integer cents
+  return total; // Should round to integer cents or use Decimal library
 }
 
 // ❌ SECURITY & BUG: Missing input validation and unhandled Promise rejection
@@ -26,7 +26,7 @@ router.post('/process-payment', async (req, res) => {
   // ❌ BUG: Array access without bounds checking
   const firstItem = items[0].name;
 
-  // ❌ ASYNC BUG: Missing try/catch block leading to server crash on rejection
+  // ❌ ASYNC BUG: Missing try/catch block leading to unhandled server crash on rejection
   const paymentResult = await fakeStripeCharge({
     amount: amount,
     currency: currency || 'USD',

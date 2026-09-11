@@ -6,18 +6,18 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const db = new sqlite3.Database(':memory:');
 
-// ❌ SECURITY ISSUE: Hardcoded JWT Secret
+// ❌ SECURITY ISSUE: Hardcoded JWT Secret in source code
 const JWT_SECRET = "supersecret12345_do_not_share";
 
 // ❌ SECURITY ISSUE: SQL Injection vulnerability via raw string interpolation
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Unsanitized user input directly in query
+  // Unsanitized user input directly interpolated into SQL query
   const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
 
   db.get(query, (err, user) => {
-    // ❌ BUG: No error checking if db connection fails
+    // ❌ BUG: No error checking if database connection fails
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -32,7 +32,7 @@ router.get('/user-profile', (req, res) => {
   const userId = req.query.id;
   
   db.get(`SELECT id, username, email, credit_card_number FROM users WHERE id = ${userId}`, (err, row) => {
-    // ❌ SECURITY: Exposing sensitive credit card details in response
+    // ❌ SECURITY: Exposing raw sensitive credit card numbers in response payload
     res.json(row);
   });
 });
