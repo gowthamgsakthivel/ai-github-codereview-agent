@@ -1,0 +1,6 @@
+Testing AI GitHub Code Review Agent
+====================================
+Feature: Password Reset & Stripe Payment Controller
+Status: Ready for automated AI PR Review
+
+This change introduces new endpoint handlers for authentication and checkout processing.

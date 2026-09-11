@@ -66,7 +66,7 @@
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.GITHUB_PAT || 'YOUR_GITHUB_PAT_HERE' }}"
+              "value": "Bearer YOUR_GITHUB_PAT"
             },
             {
               "name": "User-Agent",
@@ -90,7 +90,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const prData = $('Validate & Extract PR Info').first().json;\nlet rawDiff = $input.first().json.data || '';\n\n// Limit diff length if exceptionally large to stay within token context limits\nconst MAX_DIFF_CHARS = 25000;\nlet isTruncated = false;\n\nif (rawDiff.length > MAX_DIFF_CHARS) {\n  rawDiff = rawDiff.substring(0, MAX_DIFF_CHARS) + '\\n\\n...[DIFF TRUNCATED DUE TO SIZE]...';\n  isTruncated = true;\n}\n\nconst prompt = `You are a Senior Principal Software Architect and Cybersecurity Specialist conducting an automated Pull Request code review.\n\n### PR Context:\n- **Repository:** ${prData.repoFullName}\n- **PR #${prData.prNumber}:** ${prData.prTitle}\n- **Author:** @${prData.prAuthor}\n- **Description:** ${prData.prBody}\n\n### Git Diff to Review:\n\\`\\`\\`diff\n${rawDiff}\n\\`\\`\\`\n\n### Instructions:\nAnalyze the diff thoroughly across these 3 key pillars:\n1. 🐞 **Bugs & Edge Cases**: Logic errors, unhandled null/undefined, race conditions, async/await mistakes, edge case failures.\n2. 🛡️ **Security & Secrets**: Hardcoded credentials, SQL/Command/XSS injection vulnerabilities, improper sanitization, risky dependencies.\n3. 💎 **Code Quality & Best Practices**: Performance bottlenecks, readability, DRY violations, clean architecture, naming conventions.\n\n### Output Format:\nProduce a professional, beautifully formatted GitHub Markdown comment with:\n- 🤖 **Agent Header** with a quick PR summary\n- 🚦 **Verdict**: [ ✅ Approved / ⚠️ Request Changes / ❌ Critical Security Flaw ]\n- 📊 **Scorecard** (Bugs: X/10, Security: Y/10, Quality: Z/10)\n- 🔍 **Detailed Findings** (Grouped by file, referencing line changes with suggested code snippets in diff format where appropriate)\n- 💡 **Key Recommendations / Next Steps**\n\nKeep the tone constructive, clear, and actionable. If the PR looks completely fine, acknowledge it positively.`;\n\nreturn {\n  json: {\n    ...prData,\n    prompt: prompt,\n    diffLength: rawDiff.length,\n    isTruncated: isTruncated\n  }\n};"
+        "jsCode": "const prData = $('Validate & Extract PR Info').first().json;\nlet rawDiff = $input.first().json.data || '';\n\nconst MAX_DIFF_CHARS = 25000;\nlet isTruncated = false;\n\nif (rawDiff.length > MAX_DIFF_CHARS) {\n  rawDiff = rawDiff.substring(0, MAX_DIFF_CHARS) + '\\n\\n...[DIFF TRUNCATED DUE TO SIZE]...';\n  isTruncated = true;\n}\n\nconst prompt = `You are a Senior Principal Software Architect and Cybersecurity Specialist conducting an automated Pull Request code review.\n\n### PR Context:\n- **Repository:** ${prData.repoFullName}\n- **PR #${prData.prNumber}:** ${prData.prTitle}\n- **Author:** @${prData.prAuthor}\n- **Description:** ${prData.prBody}\n\n### Git Diff to Review:\n\\`\\`\\`diff\n${rawDiff}\n\\`\\`\\`\n\n### Instructions:\nAnalyze the diff thoroughly across these 3 key pillars:\n1. 🐞 **Bugs & Edge Cases**: Logic errors, unhandled null/undefined, race conditions, async/await mistakes, edge case failures.\n2. 🛡️ **Security & Secrets**: Hardcoded credentials, SQL/Command/XSS injection vulnerabilities, improper sanitization, risky dependencies.\n3. 💎 **Code Quality & Best Practices**: Performance bottlenecks, readability, DRY violations, clean architecture, naming conventions.\n\n### Output Format:\nProduce a professional, beautifully formatted GitHub Markdown comment with:\n- 🤖 **Agent Header** with a quick PR summary\n- 🚦 **Verdict**: [ ✅ Approved / ⚠️ Request Changes / ❌ Critical Security Flaw ]\n- 📊 **Scorecard** (Bugs: X/10, Security: Y/10, Quality: Z/10)\n- 🔍 **Detailed Findings** (Grouped by file, referencing line changes with suggested code snippets in diff format where appropriate)\n- 💡 **Key Recommendations / Next Steps**\n\nKeep the tone constructive, clear, and actionable. If the PR looks completely fine, acknowledge it positively.`;\n\nreturn {\n  json: {\n    ...prData,\n    prompt: prompt,\n    diffLength: rawDiff.length,\n    isTruncated: isTruncated\n  }\n};"
       },
       "id": "node-prepare-prompt",
       "name": "Build Agent Prompt",
@@ -101,7 +101,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $env.GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY_HERE' }}",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ 'YOUR_GEMINI_API_KEY' }}",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": {{ JSON.stringify($json.prompt) }}\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.2,\n    \"maxOutputTokens\": 2048\n  }\n}",
@@ -136,7 +136,7 @@
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $env.GITHUB_PAT || 'YOUR_GITHUB_PAT_HERE' }}"
+              "value": "Bearer YOUR_GITHUB_PAT"
             },
             {
               "name": "User-Agent",
